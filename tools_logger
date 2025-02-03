@@ -1,0 +1,42 @@
+import logging
+
+
+class ColoredFormatter(logging.Formatter):
+
+    COLORS={
+        'DEBUG' : '\033[94m',
+        'INFO' : '\033[92m',
+        'WARNING':'\033[93m',
+        'ERROR':'\033[91m',
+        'CRITICAL':'\033[95m',
+    }
+
+    RESET='\033[0m]'
+
+    def format(self,record):
+        log_color=self.COLORS.get(record.levelname, self.RESET)
+        message=super().format(record)
+        return f"{log_color}{message}{self.RESET}"
+
+
+class Logger:
+    def __init__(self,name):
+        self.logger=logging.getLogger(name)
+        self.logger.setLevel(logging.INFO)
+        log_file='./log/app.log'
+
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+
+        fh=logging.FileHandler(log_file,encoding='utf-8')
+        fh.setFormatter(logging.DEBUG)
+
+        formatter = ColoredFormatter('%(asctime)s = %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        fh.setFormatter(formatter)
+
+        self.logger.addHandler(ch)
+        self.logger.addHandler(fh)
+
+    def get_logger(self):
+        return self.logger
